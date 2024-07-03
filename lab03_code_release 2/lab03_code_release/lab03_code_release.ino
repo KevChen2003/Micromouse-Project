@@ -32,6 +32,16 @@ void loop() {
     // for rotation, you need to calculate how many rotations from the encoder is required for a 90 / 180 / 270 degree turn
     // each cell is 250mm by 250mm
     // wheel radius is 16mm
+
+    // motor move forward: input a certain number of cells you want the motor to move forward, then calculate distance and how many rotations
+    // from the encoder you need
+
+    // motor rotate: input number of degrees or some form left / right turning, then calculate how many rotations each wheel needs to move
+    // to turn 90 degrees in either direction
+
+    // connect encoder to other motor
+
+    // get PID working with encoder
     
     
     // forward: 1 (right) -> 50, 2 (left) -> -70
@@ -39,12 +49,9 @@ void loop() {
     motor1.setPWM(0); // Full speed forward
     motor2.setPWM(0);
 
-    // motor1.setPWM(0); // Full speed forward
-    // delay(1000);
-
-    // float rotation_number = encoder.getRotation();
-    // Serial.println(rotation_number);
-    // delay(1000);
+    // only works on left rotation
+    float rotation_number = encoder.getRotation();
+    Serial.println(rotation_number);
 
     // controller.compute()
     //     float currentPosition = encoder.getRotation();
