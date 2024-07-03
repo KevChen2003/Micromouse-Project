@@ -43,7 +43,6 @@ void loop() {
 
     // get PID working with encoder
     
-    
     // forward: 1 (right) -> 50, 2 (left) -> -70
 
     motor1.setPWM(0); // Full speed forward
