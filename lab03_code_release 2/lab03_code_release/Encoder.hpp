@@ -17,7 +17,7 @@ public:
         pinMode(encoder2_pin, INPUT_PULLUP);
 
         // TODO: attach the interupt on pin one such that it calls the readEncoderISR function on a rising edge
-         attachInterrupt(digitalPinToInterrupt(encoder1_pin), readEncoderISR, RISING);
+        attachInterrupt(digitalPinToInterrupt(encoder1_pin), readEncoderISR, RISING);
     }
 
 

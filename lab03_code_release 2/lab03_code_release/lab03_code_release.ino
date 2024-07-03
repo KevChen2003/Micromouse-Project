@@ -1,7 +1,7 @@
-#include "Encoder.hpp"
 #include "Motor.hpp"
 #include "PIDController.hpp"
 #include "BangBangController.hpp"
+#include "DualEncoder.hpp"
 
 #define MOT1PWM 9 // PIN 9 is a PWM pin
 #define MOT1DIR 10
@@ -12,16 +12,21 @@
 mtrn3100::Motor motor1(MOT1PWM,MOT1DIR);
 mtrn3100::Motor motor2(MOT2PWM,MOT2DIR);
 
-#define EN_A 2 // PIN 2 is an interupt
-#define EN_B 4
-mtrn3100::Encoder encoder(EN_A, EN_B);
+#define EN1_A 2 // PIN 2 is an interupt
+#define EN1_B 7
+
+#define EN2_A 3
+#define EN2_B 8
+
+mtrn3100::DualEncoder encoder(EN1_A, EN1_B,EN2_A, EN2_B);
+
 
 mtrn3100::BangBangController controller(120,0);
 
 
 void setup() {
   Serial.begin(9600);
-  controller.zeroAndSetTarget(encoder.getRotation(), 2.0); // Set the target as 2 Radians
+  // controller.zeroAndSetTarget(encoderL.getRotation(), 2.0); // Set the target as 2 Radians
 }
 
 void loop() {
@@ -48,12 +53,20 @@ void loop() {
     motor1.setPWM(0); // Full speed forward
     motor2.setPWM(0);
 
-    // only works on left rotation
-    float rotation_number = encoder.getRotation();
-    Serial.println(rotation_number);
+    float rotationL = encoder.getLeftRotation();
+    Serial.print("Left Encoder: ");
+    Serial.println(rotationL);
+
+    // returning a negative value for positive rotation -> flip later
+    float rotationR = encoder.getRightRotation();
+    Serial.print("Right Encoder: ");
+    Serial.println(rotationR);
+
+    delay(3000);
+
 
     // controller.compute()
-    //     float currentPosition = encoder.getRotation();
+    //     float currentPosition = encoderL.getRotation();
     
     // // Compute control signal using BangBangController
     // float controlSignal = controller.compute(currentPosition);
