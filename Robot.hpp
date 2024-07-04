@@ -1,3 +1,4 @@
+// Stub Functions for moving straight, turning left and right
 #pragma once
 
 #include "Motor.hpp"
