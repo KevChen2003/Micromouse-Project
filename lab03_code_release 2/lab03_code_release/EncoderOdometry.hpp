@@ -16,7 +16,7 @@ public:
         float delta_right_radians = rightValue - lastRPos; // MAKE SURE THE ENCODERS COUNT UP CORRECTLY IE. THEY ARE NOT THE WRONG DIRECTION 
 
         float delta_s = R / 2 * (delta_left_radians + delta_right_radians);
-        float delta_theta = R / (2 * L) * (-delta_left_radians + delta_right_radians);
+        float delta_theta = (R / (2 * L)) * (-delta_left_radians + delta_right_radians);
 
         
 
