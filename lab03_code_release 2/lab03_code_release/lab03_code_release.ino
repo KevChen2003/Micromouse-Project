@@ -20,13 +20,13 @@ mtrn3100::Motor motorL(MOT2PWM,MOT2DIR);
 #define EN2_B 8
 
 // test pid values
-const int kp = 200; 
-const int ki = 25;
-const int kd = 20;
+const float kp = 200.0; 
+const float ki = 25.0;
+const float kd = 0.0;
 
-// const int kp = 200;
-// const int ki = 0;
-// const int kd = 0;
+// const int kp = 1;
+// const int ki = 1;
+// const int kd = 1;
 
 mtrn3100::DualEncoder encoder(EN1_A, EN1_B,EN2_A, EN2_B);
 mtrn3100::EncoderOdometry encoder_odometry(16,90); //TASK1 TODO: IDENTIFY THE WHEEL RADIUS AND AXLE LENGTH
@@ -41,7 +41,7 @@ mtrn3100::PIDController pidL(kp, ki, kd);
 // const float targetL = 1 * (250 / (32.0 * PI));
 // const float targetR = -1 * (250 / (32.0 * PI));
 
-// target in radians?
+// target in radians? 
 const float targetL = 250 / 16.0;
 const float targetR = -250 / 16.0;
 
@@ -51,7 +51,7 @@ void setup() {
 
   // set target to 5 * cell
   pidL.zeroAndSetTarget(encoder.getLeftRotation(), targetL);
-  pidR.zeroAndSetTarget(-1 * encoder.getRightRotation(), targetR);
+  pidR.zeroAndSetTarget(encoder.getRightRotation(), targetR);
 }
 
 bool running = true;
@@ -79,20 +79,21 @@ void loop() {
 
     // motorR.setPWM(0); 
     // motorL.setPWM(0);
-
     encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
-
+    
     float pidL_val = pidL.compute(encoder.getLeftRotation());
     float pidR_val = pidR.compute(encoder.getRightRotation());
+
+    // might need to map pid value to pwm, but that requires the min and max of pid values
 
     int pmwL = pidL_val;
     int pmwR = pidR_val;
 
-    if (abs(pidL_val - targetL) < 1.0) {
+    if (abs(pidL_val - targetL) < 0.01 * targetL) {
       pmwL = 0;
     }
 
-    if (abs(pidR_val - targetR) < 1.0) {
+    if (abs(pidR_val - targetR) < 0.01 * targetL) {
       pmwR = 0;
     }
 
@@ -122,10 +123,7 @@ void loop() {
     float rotationR = encoder.getRightRotation();
     Serial.print("Right Encoder: ");
     Serial.println(rotationR);
-
-    pidL.zeroAndSetTarget(encoder.getLeftRotation(), targetL);
-    pidR.zeroAndSetTarget(-1 * encoder.getRightRotation(), targetR);
-
+    
     // // encoder odometry works but gives negative X value for moving forwards
 
     // Serial.print("Encoder Odometry X: ");
