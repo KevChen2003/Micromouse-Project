@@ -10,8 +10,8 @@
 #define MOT2PWM 11
 #define MOT2DIR 12
 
-mtrn3100::Motor motor1(MOT1PWM,MOT1DIR);
-mtrn3100::Motor motor2(MOT2PWM,MOT2DIR);
+mtrn3100::Motor motorR(MOT1PWM,MOT1DIR);
+mtrn3100::Motor motorL(MOT2PWM,MOT2DIR);
 
 #define EN1_A 2 // PIN 2 is an interupt
 #define EN1_B 7
@@ -19,18 +19,42 @@ mtrn3100::Motor motor2(MOT2PWM,MOT2DIR);
 #define EN2_A 3
 #define EN2_B 8
 
+// test pid values
+const int kp = 200; 
+const int ki = 25;
+const int kd = 20;
+
+// const int kp = 200;
+// const int ki = 0;
+// const int kd = 0;
+
 mtrn3100::DualEncoder encoder(EN1_A, EN1_B,EN2_A, EN2_B);
 mtrn3100::EncoderOdometry encoder_odometry(16,90); //TASK1 TODO: IDENTIFY THE WHEEL RADIUS AND AXLE LENGTH
 
 
 mtrn3100::BangBangController controller(120,0);
-mtrn3100::PIDController pid();
+mtrn3100::PIDController pidR(kp, ki, kd);
+mtrn3100::PIDController pidL(kp, ki, kd);
 
+// right encoder reads negative
+
+// const float targetL = 1 * (250 / (32.0 * PI));
+// const float targetR = -1 * (250 / (32.0 * PI));
+
+// target in radians?
+const float targetL = 250 / 16.0;
+const float targetR = -250 / 16.0;
 
 void setup() {
   Serial.begin(9600);
   // controller.zeroAndSetTarget(encoderL.getRotation(), 2.0); // Set the target as 2 Radians
+
+  // set target to 5 * cell
+  pidL.zeroAndSetTarget(encoder.getLeftRotation(), targetL);
+  pidR.zeroAndSetTarget(-1 * encoder.getRightRotation(), targetR);
 }
+
+bool running = true;
 
 void loop() {
     // Rotate one revolution in one direction
@@ -53,10 +77,42 @@ void loop() {
     
     // forward: 1 (right) -> 50, 2 (left) -> -70
 
-    motor1.setPWM(0); // Full speed forward
-    motor2.setPWM(0);
+    // motorR.setPWM(0); 
+    // motorL.setPWM(0);
 
     encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
+
+    float pidL_val = pidL.compute(encoder.getLeftRotation());
+    float pidR_val = pidR.compute(encoder.getRightRotation());
+
+    int pmwL = pidL_val;
+    int pmwR = pidR_val;
+
+    if (abs(pidL_val - targetL) < 1.0) {
+      pmwL = 0;
+    }
+
+    if (abs(pidR_val - targetR) < 1.0) {
+      pmwR = 0;
+    }
+
+    motorL.setPWM(pmwL);
+    motorR.setPWM(pmwR);
+
+    // if (encoder.getLeftRotation() > targetL && encoder.getRightRotation() < targetR) {
+    //   running = false;
+    // }
+
+    // while (running == false) {
+    //   motorL.setPWM(0);
+    //   motorR.setPWM(0);
+    // }
+
+    Serial.print("pidL: ");
+    Serial.println(pidL_val);
+
+    Serial.print("pidR: ");
+    Serial.println(pidR_val);
 
     float rotationL = encoder.getLeftRotation();
     Serial.print("Left Encoder: ");
@@ -67,16 +123,19 @@ void loop() {
     Serial.print("Right Encoder: ");
     Serial.println(rotationR);
 
-    // encoder odometry works but gives negative X value for moving forwards
+    pidL.zeroAndSetTarget(encoder.getLeftRotation(), targetL);
+    pidR.zeroAndSetTarget(-1 * encoder.getRightRotation(), targetR);
 
-    Serial.print("Encoder Odometry X: ");
-    Serial.println(encoder_odometry.getX());
-    Serial.print("Encoder Odometry Y: ");
-    Serial.println(encoder_odometry.getY());
-    Serial.print("Encoder Odometry H: ");
-    Serial.println(encoder_odometry.getH());
+    // // encoder odometry works but gives negative X value for moving forwards
 
-    delay(3000);
+    // Serial.print("Encoder Odometry X: ");
+    // Serial.println(encoder_odometry.getX());
+    // Serial.print("Encoder Odometry Y: ");
+    // Serial.println(encoder_odometry.getY());
+    // Serial.print("Encoder Odometry H: ");
+    // Serial.println(encoder_odometry.getH());
+
+    // delay(3000);
 
 
     // controller.compute()
@@ -94,8 +153,4 @@ void loop() {
 
     // // Optional: Add a delay to control loop frequency
     // delay(1000); // Adjust delay as needed
-    
-    
-    
-    
 }
