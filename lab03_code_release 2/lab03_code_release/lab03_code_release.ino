@@ -109,6 +109,8 @@ void loop() {
     //   motorR.setPWM(0);
     // }
 
+    // PIDs at roughly: left 32800, right -32600
+
     Serial.print("pidL: ");
     Serial.println(pidL_val);
 
