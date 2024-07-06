@@ -16,7 +16,7 @@ public:
         pinMode(encoder1_pin, INPUT_PULLUP);
         pinMode(encoder2_pin, INPUT_PULLUP);
 
-        // TODO: attach the interupt on pin one such that it calls the readEncoderISR function on a rising edge
+        // TODO: attach the interupt on pin one such that it calls the readEncoderISR function on a rising edge DONE
          attachInterrupt(digitalPinToInterrupt(encoder1_pin), readEncoderISR, RISING);
     }
 
@@ -25,7 +25,7 @@ public:
     void readEncoder() {
         noInterrupts();
 
-        // TODO: Increase or Decrease the count by one based on the reading on encoder pin 2
+        // TODO: Increase or Decrease the count by one based on the reading on encoder pin 2: DONE
         bool enc2State = digitalRead(encoder2_pin);
         
         // Update the count based on the direction of rotation
@@ -41,7 +41,7 @@ public:
     // Helper function which to convert encouder count to radians
     float getRotation() {
 
-        // TODO: Convert encoder count to radians
+        // TODO: Convert encoder count to radians DONE
         float rotation = count * (2 * PI) / counts_per_revolution;
         return rotation;
 

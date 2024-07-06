@@ -17,7 +17,7 @@ public:
 
         error = setpoint - (input - zero_ref);
 
-        // TODO: IMPLIMENT PID CONTROLLER
+        // TODO: IMPLIMENT PID CONTROLLER DONE
         integral = prev_integral + error * dt;
         derivative = (error - prev_error) / dt;
         output = kp * error + ki * integral + kd * derivative;

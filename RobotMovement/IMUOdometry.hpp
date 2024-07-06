@@ -7,7 +7,7 @@
 namespace mtrn3100 {
     class IMUOdometry {
     public:
-        IMUOdometry() : x(0), y(0), vx(0), vy(0), lastUpdateTime(millis()) {}
+        IMUOdometry() : x(0), y(0), vx(0), vy(0), yaw(0), lastUpdateTime(millis()) {}
 
         void update(float accel_x, float accel_y) {
             unsigned long currentTime = millis();
