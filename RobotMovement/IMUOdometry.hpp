@@ -2,6 +2,7 @@
 #define IMU_ODOMETRY_HPP
 
 #include <Arduino.h>
+#include <MPU6050_light.h>
 
 namespace mtrn3100 {
     class IMUOdometry {
@@ -17,6 +18,8 @@ namespace mtrn3100 {
             vx += accel_x * dt/1000;
             vy += accel_y * dt/1000;
 
+            yaw = imu.getAngleZ();
+
             // TODO: Integrate velocity to get position
             x += vx * dt/1000;
             y += vy * dt/1000;
@@ -24,11 +27,14 @@ namespace mtrn3100 {
 
         float getX() const { return x; }
         float getY() const { return y; }
+        float getYaw() const { return yaw; }
 
     private:
         float x, y;
         float vx, vy;
+        float yaw;
         unsigned long lastUpdateTime;
+        MPU6050_light imu;
     };
 }
 
