@@ -43,6 +43,12 @@ public:
         return (static_cast<float>(r_count) / counts_per_revolution ) * 2* PI;
     }
 
+    // Function to reset encoder counts
+    void reset() {
+        l_count = 0;
+        r_count = 0;
+    }
+
 private:
     static void readLeftEncoderISR() {
         if (instance != nullptr) {
