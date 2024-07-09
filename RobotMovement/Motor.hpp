@@ -25,6 +25,7 @@ namespace mtrn3100 {
             analogWrite(pwm_pin, abs(pwm));
         }
 
+
     private:
         const uint8_t pwm_pin;
         const uint8_t dir_pin;
