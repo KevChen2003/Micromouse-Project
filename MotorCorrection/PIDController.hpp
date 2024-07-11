@@ -1,4 +1,4 @@
-#pragma once
+Az#pragma once
 
 #include <math.h>
 

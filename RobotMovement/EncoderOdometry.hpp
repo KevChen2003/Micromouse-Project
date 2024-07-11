@@ -2,11 +2,12 @@
 
 #include <Arduino.h>
 #include <math.h>
+// #include <cmath.h>
 
 namespace mtrn3100 {
 class EncoderOdometry {
 public:
-    EncoderOdometry(float radius, float wheelBase) : x(0), y(0), h(0), R(radius), L(wheelBase), lastLPos(0), lastRPos(0) {}
+    EncoderOdometry(float radius, float wheelBase) : x(0), y(0), h(0), dist(0), R(radius), L(wheelBase), lastLPos(0), lastRPos(0) {}
 
     //TODO: COMPLETE THIS FUNCTION
     void update(float leftValue,float rightValue) {
@@ -24,6 +25,7 @@ public:
         x += delta_s * cos(h);
         y += delta_s * sin(h);
         h += delta_theta;
+        dist = sqrt(x^2 + y^2 + h^2);
         lastLPos = leftValue;
         lastRPos = rightValue;
     }
@@ -37,12 +39,13 @@ public:
     float getX() const { return x; }
     float getY() const { return y; }
     float getH() const { return h; }
+    float getDistance() const { return dist; }
 
 private:
-    float x, y, h;
+    int x, y, h, dist;
     const float R, L;
     float lastLPos, lastRPos;
-    uint16_t counts_per_revolution = 690;
+    uint16_t counts_per_revolution = 700;
 };
 
 }

@@ -20,7 +20,7 @@
 #define OLED_RESET -1 // Reset pin number (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3D // See OLED datasheet for address (0x3D for 128x64, 0x3C for 128x32)
 
-MPU6050 mpu(Wire); // Creates an IMU
+// MPU6050 mpu(Wire); // Creates an IMU
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET); // Creates an OLED display
 
@@ -28,17 +28,17 @@ VL6180X leftLidar; // Creates lidar 1
 VL6180X frontLidar; // Creates lidar 2
 VL6180X rightLidar; // Creates lidar 3
 
-#define leftLidar_pin A0; // leftLidar pin number 
-#define frontLidar_pin A1; // frontLidar pin number
-#define rightLidar_pin A2; // rightLidar pin number
-const float WALL_DETECTION = 80 // 80mm threshod for staying at the centre of the cell
+#define leftLidar_pin A0 // leftLidar pin number 
+#define frontLidar_pin A1 // frontLidar pin number
+#define rightLidar_pin A2 // rightLidar pin number
+const float WALL_DETECTION = 80; // 80mm threshod for staying at the centre of the cell
 
 // PID Control
 // const int Kp = 200;
 // const int Ki = 25;
 // const int Kd = 0;
 
-const float BasePwm = 200;
+const float BasePwm = 150;
 // Moving Average Filter
 // unsigned long timer = 0;
 // const int numReadings = 5; // Number of readings to average
@@ -123,7 +123,7 @@ void loop() {
     float frontLidarVal = frontLidar.readRangeSingleMillimeters();
      if (frontLidarVal <= WALL_DETECTION) {
         stopMotors();
-        Serial.println("Wall detected! Stopping.");
+        // Serial.println("Wall detected! Stopping.");
         return;
     }
  
@@ -131,12 +131,17 @@ void loop() {
     float PIDRight = R_PID.compute(rightLidar.readRangeSingleMillimeters()); 
     encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
     float travelledDist = encoder_odometry.getDistance();
-    float adjustedPWM = BasePwm * (250 - travelledDist) / 250;
-    Serial.print("Adjusted PWM: ");
-    Serial.println(adjustedPWM);
+    // float adjustedPWM = BasePwm * (250 - travelledDist) / 250;
+
+    // Serial.print("Adjusted PWM: ");
+    // Serial.println(adjustedPWM);
+
+    leftMotor.setPWM(BasePwm);
+    rightMotor.setPWM(-BasePwm); // Negative for forward direction
  
-    leftMotor.setPWM(adjustedPWM + PIDLeft);
-    rightMotor.setPWM(-(adjustedPWM - PIDRight)); // Negative for forward direction
+ 
+    // leftMotor.setPWM(adjustedPWM + PIDLeft);
+    // rightMotor.setPWM(-(adjustedPWM - PIDRight)); // Negative for forward direction
  
     Serial.print("ODOM:\t\t");
     Serial.print(encoder_odometry.getX());
