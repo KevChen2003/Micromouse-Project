@@ -1,6 +1,4 @@
 #include "Motor.hpp"
-#include <Arduino.h>
-#include "math.h"
 
 mtrn3100::Motor::Motor(uint8_t pwm_pin, uint8_t in2) : pwm_pin(pwm_pin), dir_pin(in2) {
     pinMode(this->dir_pin, OUTPUT);

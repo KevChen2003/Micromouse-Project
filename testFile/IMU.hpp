@@ -3,6 +3,8 @@
 #include <MPU6050_light.h>
 #include <Adafruit_SSD1306.h>
 #include <Arduino.h>
+#include <Wire.h>
+
 
 namespace mtrn3100 {
   class IMU{

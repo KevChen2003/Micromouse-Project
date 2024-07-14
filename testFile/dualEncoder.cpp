@@ -1,5 +1,4 @@
 #include "dualEncoder.hpp"
-#include <Arduino.h>
 
 // // mtrn3100::DualEncoder::instance;
 // // DualEncoder::instance = nullptr;
@@ -77,6 +76,7 @@ void DualEncoder::readLeftEncoder() {
     noInterrupts();
     direction = digitalRead(mot1_dir) ? 1 : -1;
     l_count += direction;
+    l_position += getLeftRotation();
     interrupts();
 }
     
@@ -84,6 +84,7 @@ void DualEncoder::readRightEncoder() {
     noInterrupts();
     direction = digitalRead(mot2_dir) ? 1 : -1;
     r_count += direction;
+    r_position += getRightRotation();
     interrupts();
 }
 

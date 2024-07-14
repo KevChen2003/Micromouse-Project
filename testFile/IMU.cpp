@@ -1,6 +1,4 @@
 #include "IMU.hpp"
-#include <Wire.h>
-#include <Arduino.h>
 
 void mtrn3100::IMU::setupIMU(MPU6050& mpu) {
     byte status = mpu.begin();
@@ -16,38 +14,38 @@ void mtrn3100::IMU::setupIMU(MPU6050& mpu) {
 void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings, int& index, unsigned long& timer, Adafruit_SSD1306& display) {
     mpu.update();
     if (millis() - timer > 1000) { // Prints data every second
-        Serial.print(F("ACCELERO X: "));
-        Serial.print(mpu.getAccX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.print(mpu.getAccY());
-        Serial.print(" | ");
-        Serial.print("Z: ");
-        Serial.println(mpu.getAccZ());
+        // Serial.print(F("ACCELERO X: "));
+        // Serial.print(mpu.getAccX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.print(mpu.getAccY());
+        // Serial.print(" | ");
+        // Serial.print("Z: ");
+        // Serial.println(mpu.getAccZ());
     
-        Serial.print(F("GYRO X: "));
-        Serial.print(mpu.getGyroX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.print(mpu.getGyroY());
-        Serial.print(" | ");
-        Serial.print("Z: ");
-        Serial.println(mpu.getGyroZ());
+        // Serial.print(F("GYRO X: "));
+        // Serial.print(mpu.getGyroX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.print(mpu.getGyroY());
+        // Serial.print(" | ");
+        // Serial.print("Z: ");
+        // Serial.println(mpu.getGyroZ());
     
-        Serial.print(F("ACC ANGLE X: "));
-        Serial.print(mpu.getAccAngleX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.println(mpu.getAccAngleY());
+        // Serial.print(F("ACC ANGLE X: "));
+        // Serial.print(mpu.getAccAngleX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.println(mpu.getAccAngleY());
         
-        Serial.print(F("ANGLE X: "));
-        Serial.print(mpu.getAngleX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.print(mpu.getAngleY());
-        Serial.print(" | ");
-        Serial.print("Z: ");
-        Serial.println(mpu.getAngleZ());
+        // Serial.print(F("ANGLE X: "));
+        // Serial.print(mpu.getAngleX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.print(mpu.getAngleY());
+        // Serial.print(" | ");
+        // Serial.print("Z: ");
+        // Serial.println(mpu.getAngleZ());
 
         float currentYaw = mpu.getAngleZ(); // Gets current yaw reading
 

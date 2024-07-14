@@ -1,8 +1,6 @@
 #include "Lidar.hpp"
-#include <Wire.h>
-#include <Arduino.h>
 
-void mtrn3100::Lidar::setupLidars(VL6180X& lidar1, VL6180X& lidar2, VL6180X& lidar3, int lidar1_pin, int lidar2_pin, int lidar3_pin) {
+void mtrn3100::Lidar::setupLidars(int lidar1_pin, int lidar2_pin, int lidar3_pin) {
     pinMode(lidar1_pin, OUTPUT); // Initialises lidar1_pin as an output 
     pinMode(lidar2_pin, OUTPUT); // Initialises lidar2_pin as an output 
     pinMode(lidar3_pin, OUTPUT); // Initialises lidar3_pin as an output 
@@ -42,7 +40,7 @@ void mtrn3100::Lidar::setupLidars(VL6180X& lidar1, VL6180X& lidar2, VL6180X& lid
     lidar3.setAddress(0x56); // Changes the address of lidar2 (from 0x29)
 }
 
-void mtrn3100::Lidar::updateLidars(VL6180X& lidar1, VL6180X& lidar2, VL6180X& lidar3) {
+void mtrn3100::Lidar::updateLidars() {
     Serial.print("Distance: ");
     Serial.print(lidar1.readRangeSingleMillimeters()); // Prints the range value of lidar1 to serial monitor
     Serial.print(" | ");
@@ -60,4 +58,16 @@ void mtrn3100::Lidar::updateLidars(VL6180X& lidar1, VL6180X& lidar2, VL6180X& li
         Serial.print("lidar 3 TIMEOUT"); 
     }
     delay(100); // Waits 0.1 second for next scan
+}
+
+float mtrn3100::Lidar::getLeftLidar() {
+    return lidar1.readRangeSingleMillimeters();
+}
+
+float mtrn3100::Lidar::getRightLidar() {
+    return lidar2.readRangeSingleMillimeters();
+}
+
+float mtrn3100::Lidar::getFrontLidar() {
+    return lidar3.readRangeSingleMillimeters();
 }
