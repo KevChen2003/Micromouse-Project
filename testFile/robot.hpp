@@ -42,15 +42,20 @@ int index = 0; // Index to track position in the array
 
 mtrn3100::DualEncoder encoder(EN_1_A, EN_1_B, EN_2_A, EN_2_B);
 mtrn3100::EncoderOdometry encoder_odometry(16,90); // Wheel radius & axial length
-mtrn3100::Motor L_Motor(9, 10); // correct
-mtrn3100::Motor R_Motor(11, 12);
+mtrn3100::Motor R_Motor(9, 10); // correct
+mtrn3100::Motor L_Motor(11, 12);
 mtrn3100::Lidar lidar;
 mtrn3100::IMU imu;
 // mtrn3100::OLED oled;
 
+// tune pids
 
-mtrn3100::PIDController l_forward_pid(0.1,0, 0);
-mtrn3100::PIDController r_forward_pid(0.1,0, 0);
+// tuned to 1 cell, a bit slow
+// left: 9,0,0.0012
+// right 8,0, 0
+
+mtrn3100::PIDController l_forward_pid(9,0,0.0012);
+mtrn3100::PIDController r_forward_pid(8,0,0);
 
 mtrn3100::PIDController side_lidar_pid(0.5,0.1,0);
 mtrn3100::PIDController front_lidar_pid(0.5,0,0);
