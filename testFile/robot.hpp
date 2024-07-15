@@ -54,7 +54,12 @@ mtrn3100::IMU imu;
 // left: 9,0,0.0012
 // right 8,0, 0
 
-mtrn3100::PIDController l_forward_pid(9,0,0.0012);
+// tuning for multiple cells
+// left: 9,0,0
+// right: 8,0,0
+
+
+mtrn3100::PIDController l_forward_pid(9,0,0);
 mtrn3100::PIDController r_forward_pid(8,0,0);
 
 mtrn3100::PIDController side_lidar_pid(0.5,0.1,0);

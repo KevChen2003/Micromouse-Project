@@ -50,6 +50,18 @@ void loop() {
     // L_Motor.setPWM(pidL_signal);
     // R_Motor.setPWM(-pidR_signal);
 
+    // float pidL_signal = l_forward_pid.compute(encoder.getLeftRotation());
+    // float pidR_signal = r_forward_pid.compute(-encoder.getRightRotation());
+
+    // Serial.print("Left pid: ");
+    // Serial.println(pidL_signal);
+
+    // Serial.print("Right pid: ");
+    // Serial.println(pidR_signal);
+
+    // L_Motor.setPWM(pidL_signal);
+    // R_Motor.setPWM(-(pidR_signal));
+
     while (count < 5) {
         l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), target);    
         r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), target);
@@ -80,12 +92,15 @@ bool move() {
 
     L_Motor.setPWM(pidL_signal);
     R_Motor.setPWM(-(pidR_signal));
-    if (abs(pidL_signal) < 20 && abs(pidR_signal < 20)) {
+
+    if (abs(pidL_signal) < 12 && abs(pidR_signal < 12)) {
         L_Motor.setPWM(0);
         R_Motor.setPWM(0);
         Serial.println("Stopped");
+        delay(1500);
         return true;
     }
 
+    delay(1500);
     return false;
 }
