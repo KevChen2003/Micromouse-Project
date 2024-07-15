@@ -11,7 +11,7 @@ void mtrn3100::IMU::setupIMU(MPU6050& mpu) {
     Serial.println("Done!\n");
 }
 
-void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings, int& index, unsigned long& timer, Adafruit_SSD1306& display) {
+void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings, int& index, unsigned long& timer) {
     mpu.update();
     if (millis() - timer > 1000) { // Prints data every second
         // Serial.print(F("ACCELERO X: "));
@@ -68,12 +68,12 @@ void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings,
         timer = millis();
 
         // Updates the OLED with the moving yaw average
-        display.clearDisplay();
-        display.setTextSize(1); // Normal 1:1 pixel scale
-        display.setTextColor(SSD1306_WHITE); // White text
-        display.setCursor(0, 0); // Starts at the top-left corner
-        display.print(F("Yaw (Moving Average): ")); // Since we are reusing this text, it is better to allocate it to flash memory instead of SRAM
-        display.println(yawAverage);
-        display.display();
+        // display.clearDisplay();
+        // display.setTextSize(1); // Normal 1:1 pixel scale
+        // display.setTextColor(SSD1306_WHITE); // White text
+        // display.setCursor(0, 0); // Starts at the top-left corner
+        // display.print(F("Yaw (Moving Average): ")); // Since we are reusing this text, it is better to allocate it to flash memory instead of SRAM
+        // display.println(yawAverage);
+        // display.display();
     }
 }

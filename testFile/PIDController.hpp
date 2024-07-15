@@ -22,7 +22,7 @@ class PIDController {
 
             error = (input - zero_ref) - setpoint; // System error
 
-            integral = error * dt; // Calculates integral
+            integral = prev_integral + error * dt; // Calculates integral
             derivative = (error-prev_error) / dt; // Calculates derivative
             
             output = kp * error + ki * integral + kd * derivative; // PID formula

@@ -10,9 +10,9 @@ void setup() {
     Wire.begin();
     Serial.begin(9600);
 
-    lidar.setupLidars(lidar1_pin, lidar2_pin, lidar3_pin);
+    lidar.setupLidars(leftLidar_pin, rightLidar_pin, frontLidar_pin);
     imu.setupIMU(mpu);
-    oled.setupOLED(display);
+    // oled.setupOLED(display);
 }
 
 void loop() {
@@ -20,15 +20,10 @@ void loop() {
     // Update encoder odometry
     encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
 
-    moveForward(2);
+    moveForward(1);
     
-    imu.updateIMU(mpu, yawReadings, numReadings, index, timer, display);
+    imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
 
     // Add a delay to control loop rate
     delay(1500);
 };
-
-void stopMotors(){
-  L_Motor.setPWM(0); 
-  R_Motor.setPWM(0);
-}
