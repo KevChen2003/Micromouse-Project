@@ -30,10 +30,9 @@ void loop() {
     // turnRight(4);
     // turnLeft(4);
 
-    moveNCellsForward(1);
+    moveNCellsForward(4);
     
     imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
-    // while(true){}
 
     // mpu.update();
     // if ((millis() - timer) > 1000) {
@@ -54,10 +53,14 @@ void loop() {
 
 void moveNCellsForward(int nCells) {
 
+    front_lidar_pid.zeroAndSetTarget(lidar.getFrontLidar(), 80);
+
+    side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
+
     for (int i = 0; i < nCells; i++) {
-        l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);    
+        l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);   
         r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), 250/16);
-        side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
+        // the line below means we have to place hte robot near-center otherwise the side lidar error will get zeroed
         while(!moveOneCellForward()){};
         // Serial.print("Count: ");
         // Serial.println(i);
@@ -74,6 +77,7 @@ bool moveOneCellForward() {
 
     float pidL_signal = l_forward_pid.compute(encoder.getLeftRotation());
     float pidR_signal = r_forward_pid.compute(-encoder.getRightRotation());
+    float front_lidar_signal = front_lidar_pid.compute(lidar.getFrontLidar());
     float side_lidar_error = getSideLidarError();
 
     float side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
@@ -87,13 +91,25 @@ bool moveOneCellForward() {
         print_timer = millis();
     }
 
-    L_Motor.setPWM(pidL_signal - side_lidar_signal);
-    R_Motor.setPWM(-pidR_signal - side_lidar_signal);
+    // pidL_signal = constrain(pidL_signal, -255, 255);
+    // pidR_signal = constrain(pidR_signal, -255, 255);
 
-    if (abs(pidL_signal) < 12 && abs(pidR_signal < 12)) {
-        // delay(1500);
-        return true;
-    } 
+    // float l_signal = constrain(pidL_signal - side_lidar_signal + front_lidar_signal, -255, 255);
+    // float r_signal = constrain(-pidR_signal - side_lidar_signal + front_lidar_signal, -255, 255);
+
+    float l_signal = constrain(- side_lidar_signal + front_lidar_signal, -255, 255);
+    float r_signal = constrain(- side_lidar_signal + front_lidar_signal, -255, 255);
+
+    L_Motor.setPWM(l_signal);
+    R_Motor.setPWM(-r_signal);
+
+    // L_Motor.setPWM(pidL_signal);
+    // R_Motor.setPWM(-pidR_signal);
+
+    // if (abs(pidL_signal) < 12 && abs(pidR_signal < 12)) {
+    //     // delay(1500);
+    //     return true;
+    // } 
 
     // delay(1500);
     return false;
