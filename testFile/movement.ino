@@ -25,7 +25,7 @@ void moveForward(int cell_count) {
 bool driveMotors(int type) {
     float side_lidar_error = getSideLidarError();
 
-    bool driveWithLidar = false;
+    bool driveWithLidar = true;
 
     if (driveWithLidar) {
         front_lidar_signal = front_lidar_pid.compute(lidar.getFrontLidar());
