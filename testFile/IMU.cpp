@@ -1,6 +1,4 @@
 #include "IMU.hpp"
-#include <Wire.h>
-#include <Arduino.h>
 
 void mtrn3100::IMU::setupIMU(MPU6050& mpu) {
     byte status = mpu.begin();
@@ -13,41 +11,41 @@ void mtrn3100::IMU::setupIMU(MPU6050& mpu) {
     Serial.println("Done!\n");
 }
 
-void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings, int& index, unsigned long& timer, Adafruit_SSD1306& display) {
+void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings, int& index, unsigned long& timer) {
     mpu.update();
     if (millis() - timer > 1000) { // Prints data every second
-        Serial.print(F("ACCELERO X: "));
-        Serial.print(mpu.getAccX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.print(mpu.getAccY());
-        Serial.print(" | ");
-        Serial.print("Z: ");
-        Serial.println(mpu.getAccZ());
+        // Serial.print(F("ACCELERO X: "));
+        // Serial.print(mpu.getAccX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.print(mpu.getAccY());
+        // Serial.print(" | ");
+        // Serial.print("Z: ");
+        // Serial.println(mpu.getAccZ());
     
-        Serial.print(F("GYRO X: "));
-        Serial.print(mpu.getGyroX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.print(mpu.getGyroY());
-        Serial.print(" | ");
-        Serial.print("Z: ");
-        Serial.println(mpu.getGyroZ());
+        // Serial.print(F("GYRO X: "));
+        // Serial.print(mpu.getGyroX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.print(mpu.getGyroY());
+        // Serial.print(" | ");
+        // Serial.print("Z: ");
+        // Serial.println(mpu.getGyroZ());
     
-        Serial.print(F("ACC ANGLE X: "));
-        Serial.print(mpu.getAccAngleX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.println(mpu.getAccAngleY());
+        // Serial.print(F("ACC ANGLE X: "));
+        // Serial.print(mpu.getAccAngleX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.println(mpu.getAccAngleY());
         
-        Serial.print(F("ANGLE X: "));
-        Serial.print(mpu.getAngleX());
-        Serial.print(" | ");
-        Serial.print("Y: ");
-        Serial.print(mpu.getAngleY());
-        Serial.print(" | ");
-        Serial.print("Z: ");
-        Serial.println(mpu.getAngleZ());
+        // Serial.print(F("ANGLE X: "));
+        // Serial.print(mpu.getAngleX());
+        // Serial.print(" | ");
+        // Serial.print("Y: ");
+        // Serial.print(mpu.getAngleY());
+        // Serial.print(" | ");
+        // Serial.print("Z: ");
+        // Serial.println(mpu.getAngleZ());
 
         float currentYaw = mpu.getAngleZ(); // Gets current yaw reading
 
@@ -62,20 +60,20 @@ void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings,
         }
         yawAverage /= numReadings;
 
-        // Prints moving yaw average to serial monitor
-        Serial.print(F("Yaw (Moving Average): "));
-        Serial.println(yawAverage);
-        Serial.print('\n');
-        Serial.println(F("==============================================================================\n"));
+        // // Prints moving yaw average to serial monitor
+        // Serial.print(F("Yaw (Moving Average): "));
+        // Serial.println(yawAverage);
+        // Serial.print('\n');
+        // Serial.println(F("==============================================================================\n"));
         timer = millis();
 
         // Updates the OLED with the moving yaw average
-        display.clearDisplay();
-        display.setTextSize(1); // Normal 1:1 pixel scale
-        display.setTextColor(SSD1306_WHITE); // White text
-        display.setCursor(0, 0); // Starts at the top-left corner
-        display.print(F("Yaw (Moving Average): ")); // Since we are reusing this text, it is better to allocate it to flash memory instead of SRAM
-        display.println(yawAverage);
-        display.display();
+        // display.clearDisplay();
+        // display.setTextSize(1); // Normal 1:1 pixel scale
+        // display.setTextColor(SSD1306_WHITE); // White text
+        // display.setCursor(0, 0); // Starts at the top-left corner
+        // display.print(F("Yaw (Moving Average): ")); // Since we are reusing this text, it is better to allocate it to flash memory instead of SRAM
+        // display.println(yawAverage);
+        // display.display();
     }
 }

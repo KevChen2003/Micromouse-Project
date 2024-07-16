@@ -1,5 +1,4 @@
 #include "EncoderOdometry.hpp"
-#include <Arduino.h>
 
 mtrn3100::EncoderOdometry::EncoderOdometry(float wheel_radius, float axle_length) 
  : wheel_radius(wheel_radius), axle_length(axle_length), x(0), y(0), h(0), R(wheel_radius), L(axle_length), lastLPos(0), lastRPos(0) {}
@@ -18,7 +17,7 @@ void mtrn3100::EncoderOdometry::update(float leftValue, float rightValue) {
 
     x += delta_s*cos(h);
     y += delta_s*sin(h);
-    h += -1*wheel_radius*delta_left_radians/axle_length + wheel_radius*delta_right_radians/axle_length;
+    h += -1*wheel_radius*delta_left_radians/(axle_length) + wheel_radius*delta_right_radians/(axle_length);
 
     lastLPos = leftValue;
     lastRPos = rightValue;
