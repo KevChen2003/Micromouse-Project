@@ -78,8 +78,9 @@ mtrn3100::PIDController front_lidar_pid(0.5,0,0);
 // 12.1 4.315 0.61 (error factor 10)
 
 mtrn3100::PIDController encoder_odometry_h_pid(4.2, 0, 1);
+mtrn3100::PIDController mpu_pid_right(11.152,0.0444,0.207);
+mtrn3100::PIDController mpu_pid_left(11.155,0.044,0.207);
 
-mtrn3100::PIDController mpu_pid(4, 0, 0);
 
 
 // Function declarations for Movement
