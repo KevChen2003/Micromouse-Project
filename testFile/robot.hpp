@@ -59,8 +59,11 @@ mtrn3100::IMU imu;
 // right: 8,0,0
 
 
-mtrn3100::PIDController l_forward_pid(30,10,0);
-mtrn3100::PIDController r_forward_pid(30,10,0);
+// mtrn3100::PIDController l_forward_pid(30,10,0);
+// mtrn3100::PIDController r_forward_pid(30,10,0);
+
+mtrn3100::PIDController l_forward_pid(250,0, 100);
+mtrn3100::PIDController r_forward_pid(250,0, 100);
 
 mtrn3100::PIDController side_lidar_pid(0.5,0.1,0);
 mtrn3100::PIDController front_lidar_pid(0.5,0,0);

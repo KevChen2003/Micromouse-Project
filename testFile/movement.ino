@@ -6,7 +6,7 @@ void moveForward(int cell_count) {
     // encoder.r_position = 0;
 
     // Set the target position (cellsize - wheel_radius)
-    float target = (250 / (16 * PI)) * cell_count;
+    float target = (250 / (16)) * cell_count;
     
     l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), target);
     r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), target);
@@ -32,9 +32,19 @@ bool driveMotors(int type) {
 
         side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
 
-        left_signal = front_lidar_signal - side_lidar_signal;
+        // left_signal = front_lidar_signal - side_lidar_signal;
 
-        right_signal = front_lidar_signal + side_lidar_signal;
+        // right_signal = front_lidar_signal + side_lidar_signal;
+
+        float front_left_signal = l_forward_pid.compute(encoder.getLeftRotation());
+        float front_right_signal = r_forward_pid.compute(-encoder.getRightRotation());
+
+        front_left_signal = constrain(front_left_signal, -255, 255);
+        front_right_signal = constrain(front_right_signal, -255, 255);
+
+        left_signal = front_left_signal - side_lidar_signal;
+
+        right_signal = front_right_signal + side_lidar_signal;
     } else {
         // l_forward_signal = l_forward_pid.compute(encoder.l_position);
         // r_forward_signal = r_forward_pid.compute(encoder.r_position);
