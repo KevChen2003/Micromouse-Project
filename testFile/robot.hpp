@@ -1,5 +1,4 @@
 // #pragma once
-
 #ifndef ROBOT_H
 #define ROBOT_H
 
@@ -8,6 +7,7 @@
 #include "dualEncoder.hpp"
 #include "encoderOdometry.hpp"
 #include "lidar.hpp"
+#include "BangBangController.hpp"
 #include <VL6180X.h>
 #include "IMU.hpp"
 #include <MPU6050_light.h> // MPU6050 IMU
@@ -59,10 +59,17 @@ mtrn3100::IMU imu;
 // right: 8,0,0
 
 
-mtrn3100::PIDController l_forward_pid(9,0,0);
-mtrn3100::PIDController r_forward_pid(8,0,0);
+// mtrn3100::PIDController l_forward_pid(9,0,0);
+// mtrn3100::PIDController r_forward_pid(8,0,0);
 
-mtrn3100::PIDController side_lidar_pid(0.5,0.1,0);
+// mtrn3100::PIDController side_lidar_pid(0.5,0.1,0);
+// mtrn3100::PIDController front_lidar_pid(0.5,0,0);
+
+mtrn3100::PIDController l_forward_pid(10,0, 0);
+mtrn3100::PIDController r_forward_pid(10,0, 0);
+
+
+mtrn3100::PIDController side_lidar_pid(0.55,0.1,0);
 mtrn3100::PIDController front_lidar_pid(0.5,0,0);
 
 // 20, 0, 3
@@ -78,14 +85,15 @@ mtrn3100::PIDController front_lidar_pid(0.5,0,0);
 // 12.1 4.315 0.61 (error factor 10)
 
 mtrn3100::PIDController encoder_odometry_h_pid(4.2, 0, 1);
-mtrn3100::PIDController mpu_pid_right(11.152,0.0444,0.207);
-mtrn3100::PIDController mpu_pid_left(11.155,0.044,0.207);
+mtrn3100::PIDController mpu_pid_right(11.1685,0.043,0.195); // best one for turning right
+mtrn3100::PIDController mpu_pid_left(11.16085,0.0417,0.211); // sliiiiighty off but it works
 
 
 
 // Function declarations for Movement
 void moveForward(int cell_count);
 int driveMotors(float l_target, float r_target);
+void straight();
 
 float l_forward_signal = 0;
 float r_forward_signal = 0;
@@ -99,7 +107,8 @@ float drive_signal = 0;
 float right_signal = 0;
 float left_signal = 0;
 
-
+// const float circumference = 2*PI*0.016;
+// const float distance_per_count = circumference/700;
 
 const int CONTROL_SPEED = 80;
 #endif

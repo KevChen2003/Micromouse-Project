@@ -24,6 +24,7 @@ public:
         noInterrupts();
         direction = digitalRead(mot1_dir) ? 1 : -1;
         l_count += direction;
+        l_position += getLeftRotation();
         interrupts();
     }
     
@@ -31,6 +32,7 @@ public:
         noInterrupts();
         direction = digitalRead(mot2_dir) ? 1 : -1;
         r_count += direction;
+        r_position += getRightRotation();
         interrupts();
     }
 
@@ -41,6 +43,11 @@ public:
 
     float getRightRotation() {
         return (static_cast<float>(r_count) / counts_per_revolution ) * 2* PI;
+    }
+
+    void reset() {
+      l_count = 0;
+      r_count = 0;
     }
 
 private:
@@ -59,7 +66,9 @@ private:
 public:
     const uint8_t mot1_int,mot1_dir,mot2_int,mot2_dir;
     volatile int8_t direction;
-    float position = 0;
+    // float position = 0;
+    float l_position = 0;
+    float r_position = 0;
     uint16_t counts_per_revolution = 700;
     volatile long l_count = 0;
     volatile long r_count = 0;

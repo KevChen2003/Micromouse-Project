@@ -1,49 +1,47 @@
 #define move_forward 1
 
-void moveForward(int cell_count) {
-
-    // encoder.l_position = 0;
-    // encoder.r_position = 0;
-
-    // Set the target position (cellsize - wheel_radius)
-    float target = (250 / (16 * PI)) * cell_count;
+// use THIS for straight line movement using lidars
+void moveForwardWithLidar(int cell_count) {
+    float target = (250 / 16) * cell_count;
     
     // l_forward_pid.zeroAndSetTarget(encoder.l_position, target);
     // r_forward_pid.zeroAndSetTarget(encoder.r_position, target);
+
+    l_forward_pid.zeroAndSetTarget(encoder.l_position, target);
+    r_forward_pid.zeroAndSetTarget(encoder.r_position, target);
    
     front_lidar_pid.zeroAndSetTarget(lidar.getFrontLidar(), 80);
     side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
 
 
     while(!driveMotors(move_forward)) {}; 
-
-    stopMotors();
-
-    delay(500);
 }
 
 bool driveMotors(int type) {
     float side_lidar_error = getSideLidarError();
 
-    bool driveWithLidar = false;
+    bool driveWithLidar = true;
 
     if (driveWithLidar) {
         front_lidar_signal = front_lidar_pid.compute(lidar.getFrontLidar());
 
         side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
 
-        left_signal = front_lidar_signal + side_lidar_signal;
+        left_signal = (front_lidar_signal + side_lidar_signal) * 5;
 
-        right_signal = front_lidar_signal - side_lidar_signal;
-    } else {
+        right_signal = (front_lidar_signal - side_lidar_signal) * 5;
+    } else { // not sure what this is but it's not working
         // l_forward_signal = l_forward_pid.compute(encoder.l_position);
-        // r_forward_signal = r_forward_pid.compute(encoder.r_position);
+        // r_forward_signal = r_forward_pid.compute(-encoder.r_position);
+        left_signal = l_forward_pid.compute(encoder.l_position);
+        right_signal = r_forward_pid.compute(encoder.r_position);
 
-        side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
+        // side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
 
-        left_signal = l_forward_signal + side_lidar_signal;
+        // left_signal = l_forward_signal + side_lidar_signal ;
 
-        right_signal = -(r_forward_signal - side_lidar_signal);
+        // right_signal = (r_forward_signal - side_lidar_signal);
+        
     }
 
     // Serial.print("side lidar signal: ");
@@ -63,8 +61,8 @@ bool driveMotors(int type) {
         return true;
     }
     
-    L_Motor.setPWM(-left_signal); 
-    R_Motor.setPWM(right_signal);
+    L_Motor.setPWM(left_signal); 
+    R_Motor.setPWM(-right_signal);
 
     return false;
 }
@@ -73,16 +71,50 @@ float getSideLidarError() {
     float left_val = lidar.getLeftLidar();
     float right_val = lidar.getRightLidar();
 
-    error = left_val-right_val;
-
-    // float side_lidar_error = 0;
-    // int no_wall = 100;
-
-    // DIfference between walls
-    return -error;
+    error = left_val-right_val;Z
+    return error;
 }
 
 void stopMotors(){
   L_Motor.setPWM(0); 
   R_Motor.setPWM(0);
 }
+
+
+// void moveForward(int cellCount) {
+//     const float distancePerCell = 250.0; // in mm
+//     const float targetDistance = cellCount * distancePerCell; // in mm
+//     const float targetCounts = targetDistance / distance_per_count; // in encoder counts
+
+//     float initialLeftCounts = encoder.getLeftRotation();
+//     float initialRightCounts = encoder.getRightRotation();
+
+//     float distanceTravelledCounts = 0;
+    
+//     // Move forward until the target distance is reached
+//     while (distanceTravelledCounts < targetCounts) {
+//         // Update the encoder readings
+//         encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
+        
+//         // Calculate the distance travelled in counts
+//         float currentLeftCounts = encoder.getLeftRotation();
+//         float currentRightCounts = encoder.getRightRotation();
+//         distanceTravelledCounts = ((currentLeftCounts - initialLeftCounts) + (currentRightCounts - initialRightCounts)) / 2.0;
+
+//         // Set motor speeds for forward movement
+//         L_Motor.setPWM(-80); // Adjust PWM values as needed
+//         R_Motor.setPWM(80);
+
+//         // Add a small delay for the loop
+//         delay(10);
+//     }
+
+//     // Stop the motors once the target distance is reached
+//     stopMotors();
+// }
+
+
+
+
+
+
