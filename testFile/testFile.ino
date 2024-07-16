@@ -30,7 +30,7 @@ void loop() {
     // turnRight(4);
     // turnLeft(4);
 
-    moveNCellsForward(4);
+    moveForward(4);
     
     imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
 
