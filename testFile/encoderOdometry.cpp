@@ -17,7 +17,7 @@ void mtrn3100::EncoderOdometry::update(float leftValue, float rightValue) {
 
     x += delta_s*cos(h);
     y += delta_s*sin(h);
-    h += -1*wheel_radius*delta_left_radians/axle_length + wheel_radius*delta_right_radians/axle_length;
+    h += -1*wheel_radius*delta_left_radians/(axle_length) + wheel_radius*delta_right_radians/(axle_length);
 
     lastLPos = leftValue;
     lastRPos = rightValue;

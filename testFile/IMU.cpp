@@ -60,11 +60,11 @@ void mtrn3100::IMU::updateIMU(MPU6050& mpu, float* yawReadings, int numReadings,
         }
         yawAverage /= numReadings;
 
-        // Prints moving yaw average to serial monitor
-        Serial.print(F("Yaw (Moving Average): "));
-        Serial.println(yawAverage);
-        Serial.print('\n');
-        Serial.println(F("==============================================================================\n"));
+        // // Prints moving yaw average to serial monitor
+        // Serial.print(F("Yaw (Moving Average): "));
+        // Serial.println(yawAverage);
+        // Serial.print('\n');
+        // Serial.println(F("==============================================================================\n"));
         timer = millis();
 
         // Updates the OLED with the moving yaw average

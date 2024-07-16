@@ -5,8 +5,7 @@
 
 #include "robot.hpp"
 
-
-int count = 0;
+unsigned long print_timer = 0;
 
 void setup() {
     // Initialization code for components
@@ -22,30 +21,51 @@ void setup() {
 }
 
 void loop() {
-    delay(50);
+    // delay(50);
     // Update encoder odometry
-    encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
+    // encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
 
-    move(5);
-
-
-    // moveForward(1);
+    // moveNCellsForward(5);
+    imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
+    turnRight(1);
     
     imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
 
+    // mpu.update();
+    // if ((millis() - timer) > 1000) {
+    //   Serial.print("Angle X: ");
+    //   Serial.println(mpu.getAngleX());
+
+    //   Serial.print("Angle Y: ");
+    //   Serial.println(mpu.getAngleY());
+
+    //   Serial.print("Angle Z: ");
+    //   Serial.println(mpu.getAngleZ());
+    //   timer = millis();
+    // }
+
     // Add a delay to control loop rate
-    delay(1500);
+    // delay(1500);
 };
 
-bool move(int nCells) {
-    while (count < nCells) {
+void moveNCellsForward(int nCells) {
+
+    for (int i = 0; i < nCells; i++) {
         l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);    
         r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), 250/16);
         while(!moveOneCellForward()){};
-        count++;
         Serial.print("Count: ");
-        Serial.println(count);
+        Serial.println(i);
     }
+    // int count = 0;
+    // while (count < nCells) {
+    //     l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);    
+    //     r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), 250/16);
+    //     while(!moveOneCellForward()){};
+    //     count++;
+    //     Serial.print("Count: ");
+    //     Serial.println(count);
+    // }
 
     delay(1500);
     return false;
@@ -65,13 +85,83 @@ bool moveOneCellForward() {
     R_Motor.setPWM(-pidR_signal);
 
     if (abs(pidL_signal) < 12 && abs(pidR_signal < 12)) {
-        L_Motor.setPWM(0);
-        R_Motor.setPWM(0);
-        Serial.println("Stopped");
         delay(1500);
         return true;
     }
 
     delay(1500);
+    return false;
+}
+
+void turnRight(int nTurns) {
+    // gives negative H value for turning right
+    
+    // Serial.print("H: ");
+    // Serial.println(encoder_odometry.getH());
+
+    float final_allowed_error = (5 * PI) / 180;
+    // float final_allowed_error = (2 * PI) / 180;
+
+    for (int i = 1; i <= nTurns; i++) {
+        // encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
+        // dont think we need the i here since the current encoder value will be zeroed
+        // encoder_odometry_h_pid.zeroAndSetTarget(encoder_odometry.getH(), (-PI/2.0)); 
+        imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
+        float currAngle = mpu.getAngleZ();
+        mpu_pid.zeroAndSetTarget(currAngle, (currAngle - 90.0)); 
+        // while(!turnRightOnce((float)final_allowed_error / nTurns)){};
+        while(!turnRightOnce((float)final_allowed_error)){};
+    }
+    // Serial.print("H: ");
+    // Serial.println(encoder_odometry.getH());
+}
+
+bool turnRightOnce(float allowed_error) {
+
+    // encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
+
+    imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
+
+    // float error = encoder_odometry_h_pid.compute(encoder_odometry.getH());
+    float error = mpu_pid.compute(mpu.getAngleZ());
+
+    // Serial.print("H: ");
+    // Serial.println(encoder_odometry.getH());
+
+
+    if ((millis() - print_timer) > 1000) {
+      Serial.print("Error: ");
+      Serial.println(error);
+
+      Serial.print("Angle: ");
+      Serial.println(mpu.getAngleZ());
+      print_timer = millis();
+    }
+
+    // float pwm = -error * 5;
+    // float pwm = -error;
+    float pwm = constrain(-error, -255, 255);
+
+    // if (abs(pwm) < 5) {
+    //   pwm *= 6;
+    // } else if (abs(pwm) < 10) {
+    //   pwm *= 4;
+    // }
+
+    // Serial.println(pwm);
+    
+    R_Motor.setPWM(pwm);
+    L_Motor.setPWM(pwm);
+
+    if (abs(error) < allowed_error) {
+        // Not going here at all
+        // Serial.println(encoder_odometry.getH());
+        Serial.println("I'm in the stop loop");
+        // stopMotors();
+        // delay(1500);
+        return true;
+    }
+    // Serial.println("Still turning");
+    // delay(1500);
     return false;
 }

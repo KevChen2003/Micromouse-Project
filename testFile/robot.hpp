@@ -65,6 +65,22 @@ mtrn3100::PIDController r_forward_pid(8,0,0);
 mtrn3100::PIDController side_lidar_pid(0.5,0.1,0);
 mtrn3100::PIDController front_lidar_pid(0.5,0,0);
 
+// 20, 0, 3
+// 17.5 50 3.3 (no error factor)
+// 4.5, 0, 1 (error factor of 5)
+
+// will slowly go towards 0 error, although very slow
+// 4.175, 0.65, 1.0011
+
+// faster, but overshoots by a fair bit
+// 4.175, 0.65, 1.0015
+
+// 12.1 4.315 0.61 (error factor 10)
+
+mtrn3100::PIDController encoder_odometry_h_pid(4.2, 0, 1);
+
+mtrn3100::PIDController mpu_pid(4, 0, 0);
+
 
 // Function declarations for Movement
 void moveForward(int cell_count);
