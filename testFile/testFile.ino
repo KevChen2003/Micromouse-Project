@@ -28,10 +28,12 @@ void loop() {
     // moveNCellsForward(5);
     imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
     // turnRight(4);
-    turnLeft(4);
+    // turnLeft(4);
+
+    moveNCellsForward(1);
     
     imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
-    while(true){}
+    // while(true){}
 
     // mpu.update();
     // if ((millis() - timer) > 1000) {
@@ -55,43 +57,45 @@ void moveNCellsForward(int nCells) {
     for (int i = 0; i < nCells; i++) {
         l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);    
         r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), 250/16);
+        side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
         while(!moveOneCellForward()){};
-        Serial.print("Count: ");
-        Serial.println(i);
+        // Serial.print("Count: ");
+        // Serial.println(i);
     }
-    // int count = 0;
-    // while (count < nCells) {
-    //     l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);    
-    //     r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), 250/16);
-    //     while(!moveOneCellForward()){};
-    //     count++;
-    //     Serial.print("Count: ");
-    //     Serial.println(count);
-    // }
-
-    delay(1500);
+    // delay(1500);
     return false;
 }
 
 bool moveOneCellForward() {
+    if (lidar.getFrontLidar() < 80) {
+        stopMotors();
+        return true;
+    } 
+
     float pidL_signal = l_forward_pid.compute(encoder.getLeftRotation());
     float pidR_signal = r_forward_pid.compute(-encoder.getRightRotation());
+    float side_lidar_error = getSideLidarError();
 
-    Serial.print("Left pid: ");
-    Serial.println(pidL_signal);
+    float side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
 
-    Serial.print("Right pid: ");
-    Serial.println(pidR_signal);
+    if ((millis() - print_timer) > 1000) {
+        Serial.print("Left pid: ");
+        Serial.println(pidL_signal);
 
-    L_Motor.setPWM(pidL_signal);
-    R_Motor.setPWM(-pidR_signal);
-
-    if (abs(pidL_signal) < 12 && abs(pidR_signal < 12)) {
-        delay(1500);
-        return true;
+        Serial.print("Right pid: ");
+        Serial.println(pidR_signal);
+        print_timer = millis();
     }
 
-    delay(1500);
+    L_Motor.setPWM(pidL_signal - side_lidar_signal);
+    R_Motor.setPWM(-pidR_signal - side_lidar_signal);
+
+    if (abs(pidL_signal) < 12 && abs(pidR_signal < 12)) {
+        // delay(1500);
+        return true;
+    } 
+
+    // delay(1500);
     return false;
 }
 
