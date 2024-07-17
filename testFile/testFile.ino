@@ -19,16 +19,24 @@ void loop() {
     // Update encoder odometry
     encoder_odometry.update(encoder.getLeftRotation(), encoder.getRightRotation());
     lidar.updateLidars();    
-    imu.updateIMU(mpu, yawReadings, numReadings, index, timer);\
-    chainMovement("rrll");  
-    // moveNCellsForward(1);  
+    imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
+
+    // moveForwardWithLidar(5);
+    chainMovement("ffrrfrfl");
+    // chainMovement("rrrr");
+
+
+    // moveNCellsForward(6);
+    // moveForwardWithLidar(6);
+    // lidar.updateLidars();
     // imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
     while(true){}
 };
 
 void moveNCellsForward(int nCells) {
-front_lidar_pid.zeroAndSetTarget(lidar.getFrontLidar(), 80);
-side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
+    
+    front_lidar_pid.zeroAndSetTarget(lidar.getFrontLidar(), 80);
+    side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
 
     // for (int i = 0; i < nCells; i++) {
     //     l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);    
@@ -39,58 +47,67 @@ side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
     // }
     int count = 0;
     while (count < nCells) {
-        l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), 250/16);    
-        r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), 250/16);
+      float lower = 249.60/16;
+      float upper = 250.40/16;
+      float setpoint = 250.00/16;
+      float target = constrain(setpoint, lower, upper); // radius
+        side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
+
+        encoder.reset();
+        l_forward_pid.zeroAndSetTarget(encoder.getLeftRotation(), target);    
+        r_forward_pid.zeroAndSetTarget(-encoder.getRightRotation(), target);
         while(!moveOneCellForward()){};
         count++;
-        Serial.print("Count: ");
-        Serial.println(count);
     }
 
-    delay(1500);
+    delay(1000);
     return false;
 }
 
 bool moveOneCellForward() {
-  if (lidar.getFrontLidar() <= 80) {
-        stopMotors();
-        return true;
-    } 
-    float pidL_signal = l_forward_pid.compute(-encoder.getLeftRotation());
-    float pidR_signal = r_forward_pid.compute(encoder.getRightRotation());
+    lidar.updateLidars();
+
+    encoder.readLeftEncoder();
+    encoder.readRightEncoder();
+
+    float pidL_signal = l_forward_pid.compute(encoder.getLeftRotation());
+    float pidR_signal = r_forward_pid.compute(-encoder.getRightRotation());
     float front_lidar_signal = front_lidar_pid.compute(lidar.getFrontLidar());
     float side_lidar_error = getSideLidarError();
 
     float side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
 
-    if ((millis() - print_timer) > 1000) {
-        Serial.print("Left pid: ");
-        Serial.println(pidL_signal);
-
-        Serial.print("Right pid: ");
-        Serial.println(pidR_signal);
-        print_timer = millis();
+    if (abs(side_lidar_pid.getError()) < 0.2) {
+      side_lidar_signal = 0;
     }
 
-    // pidL_signal = constrain(pidL_signal, -255, 255);
-    // pidR_signal = constrain(pidR_signal, -255, 255);
+    // // Stop if the encoder error is small enough
+    // if (abs(abs(l_forward_pid.getError()) - abs(side_lidar_pid.getError())) < 0.25 
+    //   && abs(abs(r_forward_pid.getError()) - abs(side_lidar_pid.getError())) < 0.25) {
+    //     stopMotors();
+    //     delay(500);
+    //     return true;
+    // }
 
-    // float l_signal = constrain(pidL_signal - side_lidar_signal + front_lidar_signal, -255, 255);
-    // float r_signal = constrain(-pidR_signal - side_lidar_signal + front_lidar_signal, -255, 255);
+    if (abs(l_forward_pid.getError()) < 0.5 && abs(r_forward_pid.getError()) < 0.5) {
+        stopMotors();
+        delay(500);
+        return true;
+    }
 
-    // float l_signal = constrain(- side_lidar_signal + front_lidar_signal, -255, 255);
-    // float r_signal = constrain(- side_lidar_signal + front_lidar_signal, -255, 255);
+    // pidL_signal = pidL_signal + (side_lidar_signal * 1.04);
+    // pidR_signal = pidR_signal - (side_lidar_signal * 1.04);
 
-    // L_Motor.setPWM(l_signal);
-    // R_Motor.setPWM(-r_signal);
+    pidL_signal = constrain(pidL_signal, -255,255);
+    pidR_signal = constrain(pidR_signal, -255,255);
 
     L_Motor.setPWM(pidL_signal);
     R_Motor.setPWM(-pidR_signal);
 
-    if (abs(pidL_signal) < 12 && abs(pidR_signal < 12)) {
-        // delay(1500);
+    if (lidar.getFrontLidar() <= 100) {
+        stopMotors();
         return true;
-    } 
+    }
 
     // delay(1500);
     return false;
@@ -125,6 +142,11 @@ bool turnRightOnce(float allowed_error) {
     }
     float pwm = constrain(-error, -255, 255);
     
+    if (abs(mpu_pid_right.getError()) < 0.5) {
+        stopMotors();
+        return true;
+    }
+
     R_Motor.setPWM(pwm);
     L_Motor.setPWM(pwm);
 
@@ -161,6 +183,12 @@ bool turnLeftOnce(float allowed_error) {
       Serial.println(mpu.getAngleZ());
       print_timer = millis();
     }
+
+    if (abs(mpu_pid_left.getError()) < 0.5) {
+        stopMotors();
+        return true;
+    }
+
     float pwm = constrain(-error, -255, 255);    
     R_Motor.setPWM(pwm);
     L_Motor.setPWM(pwm);
@@ -181,8 +209,9 @@ void chainMovement(const char* sequence) {
         } else if (move == 'l' || move == 'L') {
             turnLeft(1); 
         } else if (move == 'f' || move == 'F') {
-            moveNCellsForward(1); // ????????????? i dunno
+            moveNCellsForward(1); 
         }
+        imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
         delay(50);
     }
 }

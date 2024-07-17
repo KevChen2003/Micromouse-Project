@@ -65,11 +65,23 @@ mtrn3100::IMU imu;
 // mtrn3100::PIDController side_lidar_pid(0.5,0.1,0);
 // mtrn3100::PIDController front_lidar_pid(0.5,0,0);
 
-mtrn3100::PIDController l_forward_pid(10,0, 0);
-mtrn3100::PIDController r_forward_pid(10,0, 0);
+// mtrn3100::PIDController l_forward_pid(49.7654,0.0512,2.9);
+// mtrn3100::PIDController r_forward_pid(48.7654,0.295,3)7
+// mtrn3100::PIDController l_forward_pid(49.55,0.07,4);
+// mtrn3100::PIDController r_forward_pid(48.775,0.24577,3.73); // works
 
+// CHAINING MVOEMENTS
+// mtrn3100::PIDController l_forward_pid(49,0.25,6.5); // 49,0,3.5
+// mtrn3100::PIDController r_forward_pid(55,0,7); // 58,0,3.5
 
-mtrn3100::PIDController side_lidar_pid(0.55,0.1,0);
+mtrn3100::PIDController l_forward_pid(49,0,3.5); // 49,0,3.5
+mtrn3100::PIDController r_forward_pid(58,0,3.5); // 58,0,3.5
+
+mtrn3100::PIDController side_lidar_pid(1,0,0);
+// mtrn3100::PIDController front_lidar_pid(1,0,0);
+
+// ONLY READING LIDARS 
+// mtrn3100::PIDController side_lidar_pid(0.55,0.1,0.2);
 mtrn3100::PIDController front_lidar_pid(0.5,0,0);
 
 // 20, 0, 3
@@ -85,9 +97,17 @@ mtrn3100::PIDController front_lidar_pid(0.5,0,0);
 // 12.1 4.315 0.61 (error factor 10)
 
 mtrn3100::PIDController encoder_odometry_h_pid(4.2, 0, 1);
-mtrn3100::PIDController mpu_pid_right(11.1685,0.043,0.195); // best one for turning right
-mtrn3100::PIDController mpu_pid_left(11.16085,0.0417,0.211); // sliiiiighty off but it works
+// NOOOO
+// mtrn3100::PIDController mpu_pid_right(11.1685,0.043,0.195); // previous one
+// mtrn3100::PIDController mpu_pid_right(11.1685,0.04,0.195); // best one for turning right
 
+// mtrn3100::PIDController mpu_pid_left(11.16085,0.0417,0.211); // sliiiiighty off but it works
+// mtrn3100::PIDController mpu_pid_right(11.152,0.0444,0.207);
+
+// NOOOOOOO
+mtrn3100::PIDController mpu_pid_right(11.154,0.055,0.207);
+
+mtrn3100::PIDController mpu_pid_left(11.155,0.044,0.207);
 
 
 // Function declarations for Movement

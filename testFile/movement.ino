@@ -3,14 +3,11 @@
 // use THIS for straight line movement using lidars
 void moveForwardWithLidar(int cell_count) {
     float target = (250 / 16) * cell_count;
-    
-    // l_forward_pid.zeroAndSetTarget(encoder.l_position, target);
-    // r_forward_pid.zeroAndSetTarget(encoder.r_position, target);
 
     l_forward_pid.zeroAndSetTarget(encoder.l_position, target);
     r_forward_pid.zeroAndSetTarget(encoder.r_position, target);
    
-    front_lidar_pid.zeroAndSetTarget(lidar.getFrontLidar(), 80);
+    front_lidar_pid.zeroAndSetTarget(lidar.getFrontLidar(), 100);
     side_lidar_pid.zeroAndSetTarget(getSideLidarError(), 0);
 
 
@@ -23,40 +20,17 @@ bool driveMotors(int type) {
     bool driveWithLidar = true;
 
     if (driveWithLidar) {
+        lidar.updateLidars();
         front_lidar_signal = front_lidar_pid.compute(lidar.getFrontLidar());
 
         side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
 
-        left_signal = (front_lidar_signal + side_lidar_signal) * 5;
+        left_signal = (front_lidar_signal + side_lidar_signal);
 
-        right_signal = (front_lidar_signal - side_lidar_signal) * 5;
-    } else { // not sure what this is but it's not working
-        // l_forward_signal = l_forward_pid.compute(encoder.l_position);
-        // r_forward_signal = r_forward_pid.compute(-encoder.r_position);
-        left_signal = l_forward_pid.compute(encoder.l_position);
-        right_signal = r_forward_pid.compute(encoder.r_position);
-
-        // side_lidar_signal = side_lidar_pid.compute(side_lidar_error);
-
-        // left_signal = l_forward_signal + side_lidar_signal ;
-
-        // right_signal = (r_forward_signal - side_lidar_signal);
-        
+        right_signal = (front_lidar_signal - side_lidar_signal);
     }
 
-    // Serial.print("side lidar signal: ");
-    // Serial.println(side_lidar_signal);
-
-    // Serial.print("left signal: ");
-    // Serial.println(left_signal);
-
-    // Serial.print("right signal: ");
-    // Serial.println(right_signal);
-
-    // if (l_drive_signal > CONTROL_SPEED) { l_drive_signal = CONTROL_SPEED; }
-    // if (r_drive_signal > CONTROL_SPEED) { r_drive_signal = CONTROL_SPEED; }
-
-    if (lidar.getFrontLidar() <= 80) {
+    if (lidar.getFrontLidar() <= 100) {
         stopMotors();
         return true;
     }
@@ -71,7 +45,7 @@ float getSideLidarError() {
     float left_val = lidar.getLeftLidar();
     float right_val = lidar.getRightLidar();
 
-    error = left_val-right_val;Z
+    error = left_val-right_val;
     return error;
 }
 

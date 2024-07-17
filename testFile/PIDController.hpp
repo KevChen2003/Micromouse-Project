@@ -24,12 +24,9 @@ class PIDController {
 
             integral = prev_integral + error * dt; // Calculates integral
             derivative = (error-prev_error) / dt; // Calculates derivative
-            if (abs(error) > 0.2) {
-              output = kp * error + ki * integral + kd * derivative; // PID formula 
-            } else {
-              // output = 0;
-              return 0.0;
-            }
+          
+            output = kp * error + ki * integral + kd * derivative; // PID formula 
+          
 
             prev_error = error;
             prev_integral = integral;
