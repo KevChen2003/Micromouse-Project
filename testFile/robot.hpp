@@ -74,8 +74,11 @@ mtrn3100::IMU imu;
 // mtrn3100::PIDController l_forward_pid(49,0.25,6.5); // 49,0,3.5
 // mtrn3100::PIDController r_forward_pid(55,0,7); // 58,0,3.5
 
-mtrn3100::PIDController l_forward_pid(49,0,3.5); // 49,0,3.5
-mtrn3100::PIDController r_forward_pid(58,0,3.5); // 58,0,3.5
+// mtrn3100::PIDController l_forward_pid(30.15,0,4.9); // 49,0,3.5 // 
+// mtrn3100::PIDController r_forward_pid(36,2.7069,11); // 58,0,3.5 // 
+
+mtrn3100::PIDController l_forward_pid(33,0,4.5); // 33,0.1,4.5
+mtrn3100::PIDController r_forward_pid(36,0,3.5); // 36,0.5,3.5 
 
 mtrn3100::PIDController side_lidar_pid(1,0,0);
 // mtrn3100::PIDController front_lidar_pid(1,0,0);
@@ -126,6 +129,8 @@ float r_drive_signal = 0;
 float drive_signal = 0;
 float right_signal = 0;
 float left_signal = 0;
+float bias = 0;
+float adjusted_Rpwm = 0;
 
 // const float circumference = 2*PI*0.016;
 // const float distance_per_count = circumference/700;

@@ -22,8 +22,9 @@ void loop() {
     imu.updateIMU(mpu, yawReadings, numReadings, index, timer);
 
     // moveForwardWithLidar(5);
-    chainMovement("ffrrfrfl");
+    // chainMovement("ffrrfrfl");
     // chainMovement("rrrr");
+    chainMovement("fff");
 
 
     // moveNCellsForward(6);
@@ -90,6 +91,8 @@ bool moveOneCellForward() {
     // }
 
     if (abs(l_forward_pid.getError()) < 0.5 && abs(r_forward_pid.getError()) < 0.5) {
+        // l_forward_pid.getError() = 0;
+        // r_forward_pid.getError() = 0;
         stopMotors();
         delay(500);
         return true;
@@ -100,9 +103,16 @@ bool moveOneCellForward() {
 
     pidL_signal = constrain(pidL_signal, -255,255);
     pidR_signal = constrain(pidR_signal, -255,255);
-
+    float bias = pidL_signal - pidR_signal;
+    // float adjusted_Rpwm = pidR_signal + bias;
     L_Motor.setPWM(pidL_signal);
-    R_Motor.setPWM(-pidR_signal);
+    R_Motor.setPWM(-pidR_signal - bias);
+    // Serial.println("Left Motor: ");
+    // Serial.println(pidL_signal);
+    // Serial.println("Right Motor: ");
+    // Serial.println(-pidR_signal);
+
+
 
     if (lidar.getFrontLidar() <= 100) {
         stopMotors();
